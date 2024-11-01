@@ -10,10 +10,11 @@
 #define I2S_SAMPLE_RATE (8000)
 #define I2S_SAMPLE_BITS (16)
 #define I2S_READ_LEN (16 * 1024)
-#define RECORD_TIME (10) // Seconds
+#define RECORD_TIME (5) // Seconds
 #define I2S_CHANNEL_NUM (1)
 #define FLASH_RECORD_SIZE (I2S_CHANNEL_NUM * I2S_SAMPLE_RATE * I2S_SAMPLE_BITS / 8 * RECORD_TIME)
 #define HEADER_SIZE 44
+#define GPIO_TRANSMIT_BUTTON 34
 
 const char* ssid = "Fedooora";     // Replace with your WiFi SSID
 const char* password = "24942494"; // Replace with your WiFi password
@@ -24,7 +25,7 @@ File file;
 
 void setup() {
   Serial.begin(115200);
-
+  pinMode(GPIO_TRANSMIT_BUTTON, INPUT_PULLUP);
   // Connect to WiFi
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -55,16 +56,25 @@ void setup() {
   file.write(header, HEADER_SIZE);
 
   // Initialize I2S for recording
-  i2sInit();
-  recordAudio();
+
+
+    // do we need to start transmitting?
+   
+       i2sInit();
+       recordAudio();
+       server.on("/download", HTTP_GET, handleDownload);
+       server.begin();
+       Serial.println("Web server started");
+    
+  
+ 
 
   // Start the web server
-  server.on("/download", HTTP_GET, handleDownload);
-  server.begin();
-  Serial.println("Web server started");
+ 
 }
 
 void loop() {
+  
   server.handleClient();
 }
 

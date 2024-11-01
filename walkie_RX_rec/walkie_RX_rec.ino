@@ -2,7 +2,7 @@
 #include <driver/i2s.h>
 #include <WiFiUdp.h>
 
-#define I2S_WS 15
+#define I2S_WS 12
 #define I2S_SD 32
 #define I2S_SCK 14
 #define I2S_PORT I2S_NUM_0
@@ -10,8 +10,8 @@
 #define I2S_SAMPLE_BITS 16
 #define I2S_READ_LEN 1024
 
-const char* ssid = "Fedooora";
-const char* password = "24942494";
+const char* ssid = "test";
+const char* password = "A12345678";
 const int udpPort = 12345;
 
 WiFiUDP udp;
@@ -38,8 +38,9 @@ void loop() {
     size_t len = udp.read(udpBuffer, I2S_READ_LEN);
      for (int i = 0; i < len; i += 2) {
       int16_t* sample = (int16_t*)(udpBuffer + i);
-      *sample *= 2; // Adjust multiplier to increase volume
+      *sample *= 4; // Adjust multiplier to increase volume
     }
+    Serial.println(udpBuffer);
     i2s_write(I2S_PORT, udpBuffer, len, &len, portMAX_DELAY);
   }
 }
